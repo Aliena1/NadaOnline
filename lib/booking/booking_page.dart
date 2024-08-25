@@ -163,7 +163,7 @@ class BookingPage extends StatelessWidget {
                         border: OutlineInputBorder(), // Border similar to TextField
                         contentPadding: EdgeInsets.symmetric(horizontal: 10.0), // Padding inside the box
                       ),
-                      child: DropdownButtonFormField<Data>(
+                      child: DropdownButtonFormField<VehicleData>(
                         validator: (val){
                           if(val ==null) {
                             return "Please Enter Model";
@@ -175,12 +175,12 @@ class BookingPage extends StatelessWidget {
                         value: bookingController.selectedVehicle.value,
                         hint: Text('Select Vehicle Model'),
                         items: bookingController.vehicleModel.value.data?.map((vehicle) {
-                        return DropdownMenuItem<Data>(
+                        return DropdownMenuItem<VehicleData>(
                             value: vehicle,
                             child: Text(vehicle.displayName ?? ''),
                           );
                         }).toList(),
-                        onChanged: (Data? newValue) {
+                        onChanged: (VehicleData? newValue) {
                          bookingController.modelSlug.value = newValue!.slug.toString();
                          bookingController.displayName.value = newValue.displayName.toString();
 

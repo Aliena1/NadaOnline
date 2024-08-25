@@ -1,5 +1,10 @@
+import 'package:hive/hive.dart';
+part 'enquiry_model.g.dart';
+@HiveType(typeId: 0)
 class EnquiryModelClass {
+  @HiveField(0)
   bool? status;
+  @HiveField(1)
   Data? data;
 
   EnquiryModelClass({this.status, this.data});
@@ -9,22 +14,21 @@ class EnquiryModelClass {
     data = json['data'] != null ? new Data.fromJson(json['data']) : null;
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    if (this.data != null) {
-      data['data'] = this.data!.toJson();
-    }
-    return data;
-  }
 }
 
+@HiveType(typeId: 1)
 class Data {
+  @HiveField(0)
   List<CustomerType>? customerType;
+  @HiveField(1)
   List<EnquiryType>? enquiryType;
+  @HiveField(2)
   List<PurchaseMode>? purchaseMode;
+  @HiveField(3)
   List<Scheme>? scheme;
+  @HiveField(4)
   List<FinancingBank>? financingBank;
+  @HiveField(5)
   List<Occupation>? occupation;
 
   Data(
@@ -99,7 +103,10 @@ class Data {
   }
 }
 
+
+@HiveType(typeId: 2)
 class CustomerType {
+  @HiveField(0)
   String? type;
 
   CustomerType({this.type});
@@ -115,7 +122,10 @@ class CustomerType {
   }
 }
 
+
+@HiveType(typeId: 3)
 class EnquiryType {
+  @HiveField(0)
   String? type;
 
   EnquiryType({this.type});
@@ -131,7 +141,9 @@ class EnquiryType {
   }
 }
 
+@HiveType(typeId: 4)
 class PurchaseMode {
+  @HiveField(0)
   String? type;
 
   PurchaseMode({this.type});
@@ -147,8 +159,11 @@ class PurchaseMode {
   }
 }
 
+@HiveType(typeId: 5)
 class Scheme {
+  @HiveField(0)
   String? id;
+  @HiveField(1)
   String? scheme;
 
   Scheme({this.id, this.scheme});
@@ -166,8 +181,11 @@ class Scheme {
   }
 }
 
+@HiveType(typeId: 6)
 class FinancingBank {
+  @HiveField(0)
   String? id;
+  @HiveField(1)
   String? bankName;
 
   FinancingBank({this.id, this.bankName});
@@ -185,8 +203,11 @@ class FinancingBank {
   }
 }
 
+@HiveType(typeId: 7)
 class Occupation {
+  @HiveField(0)
   String? occupationId;
+  @HiveField(1)
   String? occupation;
 
   Occupation({this.occupationId, this.occupation});

@@ -1,15 +1,19 @@
 import 'package:enquiry_form/account_management/model/login_model.dart';
+import 'package:enquiry_form/booking/model/booking_detail_model/booking_detail_model.dart';
 import 'package:enquiry_form/home_page/model/enquiry_model.dart' as enquiry;
 import 'package:enquiry_form/home_page/model/vehicle_model.dart' as vehicle;
 import 'package:enquiry_form/home_page/repository/home_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import '../../account_management/auth_storage/auth_storage_service.dart';
 import '../../constants/app_strings.dart';
 import '../../helper/connection/connection.dart';
 import '../../helper/helper_functions/helper_functions.dart';
+import '../../home_page/home_page_service/home_page_service.dart';
+import '../../home_page/home_page_service/vehicle_service.dart';
 import '../../home_page/model/enquiry_model.dart';
 import '../../home_page/model/vehicle_model.dart';
 import '../../loader/loader.dart';
@@ -92,11 +96,11 @@ class BookingController extends GetxController with StateMixin<dynamic>{
 
 // For booking vehicle
   Rx<VehicleModel> vehicleModel = VehicleModel().obs;
-  Rx<vehicle.Data?> selectedVehicle = Rx<vehicle.Data?>(null);
+  Rx<vehicle.VehicleData?> selectedVehicle = Rx<vehicle.VehicleData?>(null);
   Rx<vehicle.Variant?> selectedVariant = Rx<vehicle.Variant?>(null);
   Rx<vehicle.ModelColor?> selectedColor = Rx<vehicle.ModelColor?>(null);
 
-  void onVehicleSelected(vehicle.Data? vehicle) {
+  void onVehicleSelected(vehicle.VehicleData? vehicle) {
     selectedVehicle.value = vehicle;
     selectedVariant.value = null; // Reset the selected variant when a new vehicle is chosen
     selectedColor.value = null; // Reset the selected variant when a new vehicle is chosen
@@ -139,7 +143,10 @@ class BookingController extends GetxController with StateMixin<dynamic>{
   RxString? selectedValueFinancingBank = "".obs;
   RxString? selectedValueScheme = "".obs;
   RxString? selectedValueOccupation = "".obs;
-
+  final HomePageService homePageService=HomePageService();
+  final VehicleService vehicleService=VehicleService();
+  var subscription;
+  final connectionChecker = InternetConnectionChecker();
   @override
   void onInit() {
     // TODO: implement onInit
@@ -152,33 +159,12 @@ class BookingController extends GetxController with StateMixin<dynamic>{
 
   void getEnquiryDropdownData() async{
     try{
-      change(null,status: RxStatus.loading());
-      final isOnline=await ConnectionChecker.isInternet();
-      if(isOnline){
-        final detail=await bookingRepository.getDropdownData();
-        print("spending = $detail");
-        final response=EnquiryModelClass.fromJson(detail);
-        if(response.status==true){
-          financingBank.value = response.data!.financingBank?.map((item) => item.bankName!).toList() ?? [];
-          purchaseMode.value = response.data!.purchaseMode?.map((item) => item.type!).toList() ?? [];
+      var lstData=await homePageService.getAllCustomerTypes();
+      financingBank.value = lstData[0].financingBank?.map((item) => item.bankName!).toList() ?? [];
+      purchaseMode.value = lstData[0].purchaseMode?.map((item) => item.type!).toList() ?? [];
+      scheme.value = lstData[0].scheme?.map((item) => item.scheme!).toList() ?? [];
+      occupation.value = lstData[0].occupation?.map((item) => item.occupation!).toList() ?? [];
 
-          scheme.value = response.data!.scheme?.map((item) => item.scheme!).toList() ?? [];
-          occupation.value = response.data!.occupation?.map((item) => item.occupation!).toList() ?? [];
-
-          // if (customerTypes.isNotEmpty) {
-          //   selectedValue?.value = customerTypes.first; // Set initial selected value
-          // }
-
-          change(response.data,status: RxStatus.success());
-        }
-        else{
-          HelperFunctions().snackBarCommon(Get.context, response.status.toString(), 0);
-          change(null,status: RxStatus.error());
-        }
-      }else{
-        print("no Connection");
-        change(null,status: RxStatus.error("No Internet Connection"));
-      }
     }catch(e){
       change(null,status: RxStatus.error(e.toString()));
       throw Exception(e.toString());
@@ -187,22 +173,8 @@ class BookingController extends GetxController with StateMixin<dynamic>{
 
   void getVehicles() async{
     try{
-      change(null,status: RxStatus.loading());
-      final isOnline=await ConnectionChecker.isInternet();
-      if(isOnline){
-        final detail=await bookingRepository.getVehicleData();
-        final response=VehicleModel.fromJson(detail);
-        if(response.status==true){
-          vehicleModel.value = response;
-          change(response.data,status: RxStatus.success());
-        }
-        else{
-          HelperFunctions().snackBarCommon(Get.context, response.status.toString(), 0);
-          change(null,status: RxStatus.error());
-        }
-      }else{
-        change(null,status: RxStatus.error("No Internet Connection"));
-      }
+      var data=await vehicleService.getAllVehicle();
+      vehicleModel.value=data[0];
     }catch(e){
       change(null,status: RxStatus.error(e.toString()));
       throw Exception(e.toString());
@@ -215,6 +187,34 @@ class BookingController extends GetxController with StateMixin<dynamic>{
 
     String savedCreatedBy = AuthStorageService().getCreatedBy();
     print('created by = $savedCreatedBy');
+    RxList<PurchaseModeListBooking> lstPurchaseModeListBooking=<PurchaseModeListBooking>[].obs;
+    for(var i in selectedPurchaseMode){
+      lstPurchaseModeListBooking.add(PurchaseModeListBooking(purchaseModeListBooking: i));
+    }
+    var offlineData=BookingDetailModel(
+      model: displayName.value,
+      modelSlug: modelSlug.value,
+      variant: variantName.value,
+      color: colorName.value,
+      fullName: nameController.text,
+      email: emailController.text,
+      address: addressController.text,
+      phone: phoneNumberController.text,
+      alternatePhone: altPhoneNumberController.text,
+      purchaseDate: formattedPurchaseDate,
+      occupation: selectedValueOccupation?.value,
+      bookingType: bookingType.value,
+      bookingAmt: bookingAmountController.text,
+      discountAmt: discountController.text,
+      dealValue: discountedPrice.value,
+      chequeNo: chequeNumberController.text,
+      bankName: selectedValueFinancingBank?.value,
+      purchaseMode: lstPurchaseModeListBooking,
+      createdBy: savedCreatedBy,
+      scheme: selectedValueScheme?.value
+
+    );
+
     // try{
       await ConnectionChecker.isInternet().then((value) async{
         if(value == true){

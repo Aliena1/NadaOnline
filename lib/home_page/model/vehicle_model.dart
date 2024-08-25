@@ -1,15 +1,20 @@
+import 'package:hive/hive.dart';
+part 'vehicle_model.g.dart';
+@HiveType(typeId: 8)
 class VehicleModel {
+  @HiveField(0)
   bool? status;
-  List<Data>? data;
+  @HiveField(1)
+  List<VehicleData>? data;
 
   VehicleModel({this.status, this.data});
 
   VehicleModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <VehicleData>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(new VehicleData.fromJson(v));
       });
     }
   }
@@ -24,25 +29,34 @@ class VehicleModel {
   }
 }
 
-class Data {
+@HiveType(typeId: 9)
+class VehicleData {
+  @HiveField(0)
   int? id;
+  @HiveField(1)
   String? name;
+  @HiveField(2)
   String? displayName;
+  @HiveField(3)
   String? logo;
+  @HiveField(4)
   String? slug;
+  @HiveField(5)
   List<Variant>? variant;
+  @HiveField(6)
   List<ModelColor>? modelColor;
 
-  Data(
+  VehicleData(
       {this.id,
         this.name,
         this.displayName,
         this.logo,
         this.slug,
         this.variant,
-        this.modelColor});
+      this.modelColor
+      });
 
-  Data.fromJson(Map<String, dynamic> json) {
+  VehicleData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     displayName = json['display_name'];
@@ -57,7 +71,7 @@ class Data {
     if (json['model_color'] != null) {
       modelColor = <ModelColor>[];
       json['model_color'].forEach((v) {
-        modelColor!.add(new ModelColor.fromJson(v));
+        modelColor!.add(ModelColor.fromJson(v));
       });
     }
   }
@@ -79,10 +93,15 @@ class Data {
   }
 }
 
+@HiveType(typeId: 10)
 class Variant {
+  @HiveField(0)
   int? id;
+  @HiveField(1)
   int? modelId;
+  @HiveField(2)
   String? name;
+  @HiveField(3)
   Specification? specification;
 
   Variant({this.id, this.modelId, this.name, this.specification});
@@ -108,9 +127,13 @@ class Variant {
   }
 }
 
+@HiveType(typeId: 11)
 class Specification {
+  @HiveField(0)
   int? id;
+  @HiveField(1)
   int? variantId;
+  @HiveField(2)
   String? price;
 
   Specification({this.id, this.variantId, this.price});
@@ -130,13 +153,21 @@ class Specification {
   }
 }
 
+@HiveType(typeId: 12)
 class ModelColor {
+  @HiveField(0)
   int? id;
+  @HiveField(1)
   int? modelId;
+  @HiveField(2)
   String? colorName;
+  @HiveField(3)
   String? colorImage;
-  Null? colorShortCode;
-  Null? colorHashvalue;
+  @HiveField(4)
+  String? colorShortCode;
+  @HiveField(5)
+  String? colorHashvalue;
+  @HiveField(6)
 
   ModelColor(
       {this.id,
