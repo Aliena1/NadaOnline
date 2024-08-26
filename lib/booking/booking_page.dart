@@ -1,5 +1,6 @@
 import 'package:enquiry_form/account_management/widgets/common_texts/subheading_text.dart';
 import 'package:enquiry_form/constants/app_color.dart';
+import 'package:enquiry_form/home_page/model/enquiry_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -99,10 +100,10 @@ class BookingPage extends StatelessWidget {
                         isExpanded: true,
                         value: bookingController.selectedValueOccupation!.value.isEmpty ? null : bookingController.selectedValueOccupation?.value, // Show hint if value is empty
                         hint: Text('Occupation'),
-                        items: bookingController.occupation.map((String value) {
+                        items: bookingController.occupation.map((Occupation value) {
                           return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
+                            value: value.occupationId,
+                            child: Text(value.occupation.toString()),
                           );
                         }).toList(),
                         onChanged: (String? newValue) {
@@ -353,10 +354,10 @@ class BookingPage extends StatelessWidget {
                         isExpanded: true,
                         value: bookingController.selectedValueFinancingBank!.value.isEmpty ? null : bookingController.selectedValueFinancingBank?.value, // Show hint if value is empty
                         hint: Text('Financing Bank'),
-                        items: bookingController.financingBank.map((String value) {
+                        items: bookingController.financingBank.map((FinancingBank value) {
                           return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
+                            value: value.id,
+                            child: Text(value.bankName.toString()),
                           );
                         }).toList(),
                         onChanged: (String? newValue) {
@@ -375,10 +376,10 @@ class BookingPage extends StatelessWidget {
                         isExpanded: true,
                         value: bookingController.selectedValueScheme!.value.isEmpty ? null : bookingController.selectedValueScheme?.value, // Show hint if value is empty
                         hint: Text('Scheme'),
-                        items: bookingController.scheme.map((String value) {
+                        items: bookingController.scheme.map((Scheme value) {
                           return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
+                            value: value.id,
+                            child: Text(value.scheme.toString()),
                           );
                         }).toList(),
                         onChanged: (String? newValue) {
@@ -405,13 +406,13 @@ class BookingPage extends StatelessWidget {
                             child: CheckboxListTile(
                               contentPadding: EdgeInsets.zero,
                               visualDensity: VisualDensity(horizontal: -4.0,vertical:-4.0),
-                              title: Text(purchaseMode, style: TextStyle(fontSize: 12.0),),
-                              value: bookingController.selectedPurchaseMode.contains(purchaseMode),
+                              title: Text(purchaseMode.type.toString(), style: TextStyle(fontSize: 12.0),),
+                              value: bookingController.selectedPurchaseMode.contains(purchaseMode.type.toString()),
                               onChanged: (bool? value) {
                                 if (value == true) {
-                                  bookingController.selectedPurchaseMode.add(purchaseMode);
+                                  bookingController.selectedPurchaseMode.add(purchaseMode.type.toString());
                                 } else {
-                                  bookingController.selectedPurchaseMode.remove(purchaseMode);
+                                  bookingController.selectedPurchaseMode.remove(purchaseMode.type.toString());
                                 }
                               },
                             ),

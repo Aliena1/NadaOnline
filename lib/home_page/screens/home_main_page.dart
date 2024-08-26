@@ -1,3 +1,4 @@
+import 'package:enquiry_form/home_page/model/enquiry_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -44,7 +45,7 @@ class HomeMainPage extends StatelessWidget {
               CommonTextfieldNumber(
                 hint: AppStrings.residenceNumberHint,
                 label: AppStrings.residenceNumber,
-                controller: homeController.phoneNumberController,
+                controller: homeController.alternativePhone,
                 nullMessage:
                 FormValidators.USERNAME_EMAIL_VALIDATION_TEXT,
               ),
@@ -89,10 +90,10 @@ class HomeMainPage extends StatelessWidget {
                   isExpanded: true,
                   value: homeController.selectedValueOccupation!.value.isEmpty ? null : homeController.selectedValueOccupation?.value, // Show hint if value is empty
                   hint: Text('Occupation'),
-                  items: homeController.occupation.map((String value) {
+                  items: homeController.occupation.map((Occupation value) {
                     return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+                      value: value.occupationId,
+                      child: Text(value.occupation.toString()),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -145,10 +146,10 @@ class HomeMainPage extends StatelessWidget {
                   isExpanded: true,
                   value: homeController.selectedValueEnquiryType!.value.isEmpty ? null : homeController.selectedValueEnquiryType?.value, // Show hint if value is empty
                   hint: Text('Enquiry Type'),
-                  items: homeController.enquiryTypes.map((String value) {
+                  items: homeController.enquiryTypes.map((EnquiryType value) {
                     return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+                      value: value.type,
+                      child: Text(value.type.toString()),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -167,10 +168,10 @@ class HomeMainPage extends StatelessWidget {
                   isExpanded: true,
                   value: homeController.selectedValueScheme!.value.isEmpty ? null : homeController.selectedValueScheme?.value, // Show hint if value is empty
                   hint: Text('Scheme'),
-                  items: homeController.scheme.map((String value) {
+                  items: homeController.scheme.map((Scheme value) {
                     return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+                      value: value.id,
+                      child: Text(value.scheme.toString()),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -189,10 +190,10 @@ class HomeMainPage extends StatelessWidget {
                   isExpanded: true,
                   value: homeController.selectedValueCustomerType!.value.isEmpty ? null : homeController.selectedValueCustomerType?.value, // Show hint if value is empty
                   hint: Text('Customer Type'), // The hint that will be shown initially
-                  items: homeController.customerTypes.map((String value) {
+                  items: homeController.customerTypes.map((CustomerType value) {
                     return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
+                      value: value.type,
+                      child: Text(value.type.toString()),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -276,13 +277,13 @@ class HomeMainPage extends StatelessWidget {
                       child: CheckboxListTile(
                         contentPadding: EdgeInsets.zero,
                         visualDensity: VisualDensity(horizontal: -4.0,vertical:-4.0),
-                        title: Text(purchaseMode, style: TextStyle(fontSize: 12.0),),
-                        value: homeController.selectedPurchaseMode.contains(purchaseMode),
+                        title: Text(purchaseMode.type.toString(), style: TextStyle(fontSize: 12.0),),
+                        value: homeController.selectedPurchaseMode.contains(purchaseMode.type.toString()),
                         onChanged: (bool? value) {
                           if (value == true) {
-                            homeController.selectedPurchaseMode.add(purchaseMode);
+                            homeController.selectedPurchaseMode.add(purchaseMode.type.toString());
                           } else {
-                            homeController.selectedPurchaseMode.remove(purchaseMode);
+                            homeController.selectedPurchaseMode.remove(purchaseMode.type.toString());
                           }
                         },
                       ),

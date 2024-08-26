@@ -7,6 +7,7 @@ import 'package:enquiry_form/home_page/repository/home_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import '../../account_management/auth_storage/auth_storage_service.dart';
@@ -82,11 +83,11 @@ class BookingController extends GetxController with StateMixin<dynamic>{
   }
 
 
-  var financingBank = <String>[].obs;
-  var purchaseMode = <String>[].obs;
+  RxList<FinancingBank> financingBank = <FinancingBank>[].obs;
+  RxList<PurchaseMode> purchaseMode = <PurchaseMode>[].obs;
 
-  var scheme = <String>[].obs;
-  var occupation = <String>[].obs;
+  RxList<Scheme> scheme = <Scheme>[].obs;
+  RxList<Occupation> occupation = <Occupation>[].obs;
 
   var modelSlug ="".obs;
   var displayName ="".obs;
@@ -197,10 +198,10 @@ class BookingController extends GetxController with StateMixin<dynamic>{
   void getEnquiryDropdownData() async{
     try{
       var lstData=await homePageService.getAllCustomerTypes();
-      financingBank.value = lstData[0].financingBank?.map((item) => item.bankName!).toList() ?? [];
-      purchaseMode.value = lstData[0].purchaseMode?.map((item) => item.type!).toList() ?? [];
-      scheme.value = lstData[0].scheme?.map((item) => item.scheme!).toList() ?? [];
-      occupation.value = lstData[0].occupation?.map((item) => item.occupation!).toList() ?? [];
+      financingBank.value = lstData[0].financingBank ?? [];
+      purchaseMode.value = lstData[0].purchaseMode ?? [];
+      scheme.value = lstData[0].scheme ?? [];
+      occupation.value = lstData[0].occupation ?? [];
 
     }catch(e){
       change(null,status: RxStatus.error(e.toString()));

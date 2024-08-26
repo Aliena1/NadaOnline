@@ -25,15 +25,16 @@ class HomeController extends GetxController with StateMixin<dynamic>{
   TextEditingController emailController = TextEditingController();
   TextEditingController addressController = TextEditingController();
   TextEditingController remarksController = TextEditingController();
+  TextEditingController alternativePhone = TextEditingController();
 
 
 
-  var customerTypes = <String>[].obs; // Observable list to store customer types
-  var enquiryTypes = <String>[].obs;
-  var purchaseMode = <String>[].obs;
+  RxList<CustomerType> customerTypes = <CustomerType>[].obs; // Observable list to store customer types
+  RxList<EnquiryType> enquiryTypes = <EnquiryType>[].obs;
+  RxList<PurchaseMode> purchaseMode = <PurchaseMode>[].obs;
 
-  var scheme = <String>[].obs;
-  var occupation = <String>[].obs;
+  RxList<Scheme> scheme = <Scheme>[].obs;
+  RxList<Occupation> occupation = <Occupation>[].obs;
 
   var enquiredVehicles = <String>[].obs;
   var selectedVehicles = <String>[].obs;
@@ -99,11 +100,11 @@ class HomeController extends GetxController with StateMixin<dynamic>{
 
   void assignNadaDetail() async{
     var lstData=await homePageService.getAllCustomerTypes();
-    customerTypes.value = lstData[0].customerType?.map((item) => item.type!).toList() ?? [];
-    enquiryTypes.value = lstData[0].enquiryType?.map((item) => item.type!).toList() ?? [];
-    purchaseMode.value = lstData[0].purchaseMode?.map((item) => item.type!).toList() ?? [];
-    scheme.value = lstData[0].scheme?.map((item) => item.scheme!).toList() ?? [];
-    occupation.value = lstData[0].occupation?.map((item) => item.occupation!).toList() ?? [];
+    customerTypes.value = lstData[0].customerType ?? [];
+    enquiryTypes.value = lstData[0].enquiryType ?? [];
+    purchaseMode.value = lstData[0].purchaseMode ?? [];
+    scheme.value = lstData[0].scheme ?? [];
+    occupation.value = lstData[0].occupation ?? [];
   }
 
   void getEnquiryDropdownData() async{
@@ -196,6 +197,7 @@ class HomeController extends GetxController with StateMixin<dynamic>{
       email:emailController.text,
       address:addressController.text,
       phone:phoneNumberController.text,
+      alternatePhone: alternativePhone.text,
       customerType:selectedValueCustomerType?.value,
       enquiryType:selectedValueEnquiryType?.value,
       scheme:selectedValueScheme?.value,
@@ -216,6 +218,7 @@ class HomeController extends GetxController with StateMixin<dynamic>{
             "email":emailController.text,
             "address":addressController.text,
             "phone":phoneNumberController.text,
+            "alternate_phone":alternativePhone.text,
             "customer_type":selectedValueCustomerType,
             "enquiry_type":selectedValueEnquiryType,
             "scheme":selectedValueScheme,
@@ -249,7 +252,6 @@ class HomeController extends GetxController with StateMixin<dynamic>{
           var lstEnqiuryDetail=await enquiryDetailService.getAllEnquiryDetails();
           if(!lstEnqiuryDetail.contains(offlineData)){
             bool saved=await enquiryDetailService.addItem(offlineData);
-            print(saved);
             if(saved){
               HelperFunctions().snackBarCommon(context, "Enquiry detail is saved successfully.", 1);
             }else{
@@ -264,6 +266,7 @@ class HomeController extends GetxController with StateMixin<dynamic>{
     catch(e){
       Loading().hideLoading();
       HelperFunctions().snackBarCommon(context, e.toString(), 0);
+      print(offlineData);
       var lstEnqiuryDetail=await enquiryDetailService.getAllEnquiryDetails();
 
       if(!lstEnqiuryDetail.contains(offlineData)){
