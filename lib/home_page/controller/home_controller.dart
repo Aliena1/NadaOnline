@@ -204,7 +204,7 @@ class HomeController extends GetxController with StateMixin<dynamic>{
       message:remarksController.text,
       createdBy:savedCreatedBy,
     );
-
+  print(offlineData);
     try{
       await ConnectionChecker.isInternet().then((value) async{
 
@@ -249,6 +249,7 @@ class HomeController extends GetxController with StateMixin<dynamic>{
           var lstEnqiuryDetail=await enquiryDetailService.getAllEnquiryDetails();
           if(!lstEnqiuryDetail.contains(offlineData)){
             bool saved=await enquiryDetailService.addItem(offlineData);
+            print(saved);
             if(saved){
               HelperFunctions().snackBarCommon(context, "Enquiry detail is saved successfully.", 1);
             }else{

@@ -1,4 +1,5 @@
 import 'package:enquiry_form/account_management/model/login_model.dart';
+import 'package:enquiry_form/booking/booking_service/booking_service.dart';
 import 'package:enquiry_form/booking/model/booking_detail_model/booking_detail_model.dart';
 import 'package:enquiry_form/home_page/model/enquiry_model.dart' as enquiry;
 import 'package:enquiry_form/home_page/model/vehicle_model.dart' as vehicle;
@@ -145,6 +146,7 @@ class BookingController extends GetxController with StateMixin<dynamic>{
   RxString? selectedValueOccupation = "".obs;
   final HomePageService homePageService=HomePageService();
   final VehicleService vehicleService=VehicleService();
+  final BookingService bookingService=BookingService();
   var subscription;
   final connectionChecker = InternetConnectionChecker();
   @override
@@ -155,6 +157,41 @@ class BookingController extends GetxController with StateMixin<dynamic>{
     getEnquiryDropdownData();
     getVehicles();
 
+    subscription = connectionChecker.onStatusChange.distinct().listen(
+          (InternetConnectionStatus status) async{
+        if (status == InternetConnectionStatus.connected) {
+          print('connecte from the internet');
+          var lstEnquiryDetailKeys=await bookingService.getAllBookingDetailsKeys();
+          for(var i in lstEnquiryDetailKeys){
+            BookingDetailModel? bookingDetailModel=await bookingService.getBookingDetails(i);
+            if(bookingDetailModel?.isSaved==false){
+              bool isDone=await postBookingOfflineToOnline(bookingDetailModel?.toBookingDetailJson());
+              if(isDone){
+                bookingDetailModel?.isSaved=true;
+                bookingService.updateBookingDetails(i,bookingDetailModel);
+              }
+            }
+          }
+
+        } else {
+          print('Disconnected from the internet');
+        }
+      },
+    );
+
+  }
+
+
+  @override
+  void onClose() {
+    subscription.cancel();
+    super.onClose();
+  }
+
+  @override
+  void dispose() {
+    subscription.cancel();
+    super.dispose();
   }
 
   void getEnquiryDropdownData() async{
@@ -215,7 +252,7 @@ class BookingController extends GetxController with StateMixin<dynamic>{
 
     );
 
-    // try{
+    try{
       await ConnectionChecker.isInternet().then((value) async{
         if(value == true){
           var map;
@@ -260,16 +297,65 @@ class BookingController extends GetxController with StateMixin<dynamic>{
               HelperFunctions().snackBarCommon(context, response.message.toString(), 0);
             }
           });
-        }else{
+        }
+        else{
           HelperFunctions().snackBarCommon(context, AppStrings.noInternetConnection, 0);
+          var lstEnqiuryDetail=await bookingService.getAllBookingDetails();
+          if(!lstEnqiuryDetail.contains(offlineData)){
+            bool saved=await bookingService.addItem(offlineData);
+            if(saved){
+              HelperFunctions().snackBarCommon(context, "Booking detail is saved successfully.", 1);
+            }else{
+              HelperFunctions().snackBarCommon(context, "Unable to save Booking Detail.", 0);
+            }
+          }else{
+            HelperFunctions().snackBarCommon(context, "Already exists", 0);
+          }
         }
       });
-    // }
-    // catch(e){
-    //   Loading().hideLoading();
-    //   HelperFunctions().snackBarCommon(context, e.toString(), 0);
-    //
-    //   throw Exception(e.toString());
-    // }
+    }
+    catch(e){
+      Loading().hideLoading();
+      HelperFunctions().snackBarCommon(context, e.toString(), 0);
+      var lstEnqiuryDetail=await bookingService.getAllBookingDetails();
+
+      if(!lstEnqiuryDetail.contains(offlineData)){
+        bool saved=await bookingService.addItem(offlineData);
+        if(saved){
+          HelperFunctions().snackBarCommon(context, "Booking detail is saved successfully.", 1);
+        }else{
+          HelperFunctions().snackBarCommon(context, "Unable to save.", 0);
+        }
+
+      }else{
+        HelperFunctions().snackBarCommon(context, "Exact Detail is already saved.", 0);
+      }
+      throw Exception(e.toString());
+    }
   }
+
+  Future<bool> postBookingOfflineToOnline(map) async {
+
+    bool isSubmitted=false;
+
+    try{
+      await ConnectionChecker.isInternet().then((value) async{
+        if(value == true){
+          await bookingRepository.postBookingData(map).then((value) async{
+            var response=BookingResponse.fromJson(value);
+            if(response.status==true){
+              isSubmitted=true;
+            }
+          });
+        }
+      });
+      return isSubmitted;
+    }
+    catch(e){
+      return isSubmitted;
+    }
+  }
+
+
+
 }

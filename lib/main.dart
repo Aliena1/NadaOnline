@@ -1,4 +1,5 @@
 import 'package:enquiry_form/account_management/screens/login-screen.dart';
+import 'package:enquiry_form/booking/model/booking_detail_model/booking_detail_model.dart';
 import 'package:enquiry_form/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
@@ -11,7 +12,6 @@ import 'home_page/model/enquiry_model.dart';
 import 'home_page/model/vehicle_model.dart';
 
 void main() async{
-  await GetStorage.init();
   await GetStorage.init();
   await Hive.initFlutter();
   Hive.registerAdapter(DataAdapter());
@@ -29,6 +29,8 @@ void main() async{
   Hive.registerAdapter(EnquiryModelListAdapter());
   Hive.registerAdapter(PurchaseModeListAdapter());
   Hive.registerAdapter(ModelColorAdapter());
+  Hive.registerAdapter(BookingDetailModelAdapter());
+  Hive.registerAdapter(PurchaseModeListBookingAdapter());
   runApp(const MyApp());
 }
 

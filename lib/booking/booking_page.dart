@@ -13,6 +13,7 @@ import '../../account_management/widgets/common_texts/heading_text_red.dart';
 import '../../constants/app_strings.dart';
 import '../account_management/auth_storage/auth_storage_service.dart';
 import '../home_page/model/vehicle_model.dart';
+import 'booking_service/booking_service.dart';
 import 'controller/booking_controller.dart';
 
 class BookingPage extends StatelessWidget {
@@ -542,6 +543,8 @@ class BookingPage extends StatelessWidget {
                             bookingController.bookingType.value = "cash";
                           },
                         ),
+
+
                       ],
                     ),
                     CommonMargin(),

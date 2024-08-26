@@ -71,7 +71,7 @@ class HomeMainPage extends StatelessWidget {
               CommonTextfieldText(
                 hint: AppStrings.addressHint,
                 label: AppStrings.address,
-                controller: homeController.emailController,
+                controller: homeController.addressController,
                 nullMessage:
                 FormValidators.USERNAME_EMAIL_VALIDATION_TEXT,
               ),
