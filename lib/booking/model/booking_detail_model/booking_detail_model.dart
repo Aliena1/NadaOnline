@@ -6,45 +6,45 @@ part 'booking_detail_model.g.dart';
 @HiveType(typeId: 18)
 class BookingDetailModel extends Equatable {
   @HiveField(0)
-  String? model;
+  final String? model;
   @HiveField(1)
-  String? modelSlug;
+  final String? modelSlug;
   @HiveField(2)
-  String? variant;
+  final String? variant;
   @HiveField(3)
-  String? color;
+  final String? color;
   @HiveField(4)
-  String? fullName;
+  final String? fullName;
   @HiveField(5)
-  String? email;
+  final String? email;
   @HiveField(6)
-  String? address;
+  final String? address;
   @HiveField(7)
-  String? phone;
+  final String? phone;
   @HiveField(8)
-  String? alternatePhone;
+  final String? alternatePhone;
   @HiveField(9)
-  String? purchaseDate;
+  final String? purchaseDate;
   @HiveField(10)
-  String? occupation;
+  final String? occupation;
   @HiveField(11)
-  String? bookingType;
+  final String? bookingType;
   @HiveField(12)
-  String? bookingAmt;
+  final String? bookingAmt;
   @HiveField(13)
-  String? discountAmt;
+  final String? discountAmt;
   @HiveField(14)
-  String? dealValue;
+  final String? dealValue;
   @HiveField(15)
-  String? chequeNo;
+  final String? chequeNo;
   @HiveField(16)
-  String? bankName;
+  final String? bankName;
   @HiveField(17)
-  List<PurchaseModeListBooking> purchaseMode;
+  final List<PurchaseModeListBooking> purchaseMode;
   @HiveField(18)
-  String? createdBy;
+  final String? createdBy;
   @HiveField(19)
-  String? scheme;
+  final String? scheme;
   @HiveField(20)
   bool isSaved;
 
