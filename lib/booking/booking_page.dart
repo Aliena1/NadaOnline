@@ -1,9 +1,11 @@
 import 'package:enquiry_form/account_management/widgets/common_texts/subheading_text.dart';
 import 'package:enquiry_form/constants/app_color.dart';
 import 'package:flutter/material.dart';
+import 'package:fonepay_flutter/fonepay_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../account_management/validators.dart';
 import '../../account_management/widgets/common_appbar/common_appbar_with_notification.dart';
 import '../../account_management/widgets/common_margin/common_margin_twenty.dart';
@@ -12,6 +14,7 @@ import '../../account_management/widgets/common_textfield_text.dart';
 import '../../account_management/widgets/common_texts/heading_text_red.dart';
 import '../../constants/app_strings.dart';
 import '../account_management/auth_storage/auth_storage_service.dart';
+import '../fonepay_page/fonepay_app.dart';
 import '../home_page/model/vehicle_model.dart';
 import 'controller/booking_controller.dart';
 
@@ -528,6 +531,7 @@ class BookingPage extends StatelessWidget {
                             }
                           },
                         ),
+
                         ElevatedButton(
                           child: Text('QR'),
                           style: ElevatedButton.styleFrom(
@@ -539,12 +543,43 @@ class BookingPage extends StatelessWidget {
 
                           ),
                           onPressed: () {
-                            bookingController.bookingType.value = "cash";
+                            bookingController.bookingType.value = "qr";
+                            // _launchUrl();
+
+                            // bookingController.postBooking(context);
+                            // Get.to(FonepayIntegration());
+                            Get.to(FonePayApp(title: 'test',));
                           },
                         ),
                       ],
                     ),
                     CommonMargin(),
+
+                    FonePayButton(
+                      paymentConfig: FonePayConfig.live(
+                        amt: 1.0,
+                        r2: 'https://clientapi.fonepay.com/api/merchantRequest',
+                        ru: 'https://nada024.laxmihyundai.com/fonepay-response-mobile',
+                        r1: 'qwq',
+                        prn: 'PD-2-${FonePayUtils.generateRandomString(len: 6)}',
+                        sk: '01fc907cb4cf4d4a8c2e6b87deb44189',
+                        md: 'S',
+                        pid: '2009140171',
+
+                      ),
+                      // width: double.infinity,
+                      // width: isLandscape ? screenSize.width * 0.6 : screenSize.width * 0.8,
+                      onFailure: (result) async {
+                        print('failed...=$result');
+                        Get.snackbar('Error', result);
+                      },
+                      onSuccess: (result) async {
+                        print('success success=${result.toJson()}');
+                        Get.snackbar('Success', "");
+
+
+                      },
+                    ),
 
 
                     CommonMargin(),
@@ -560,5 +595,15 @@ class BookingPage extends StatelessWidget {
           ),
         )
     );
+  }
+
+  final Uri _url = Uri.parse('https://nada024.laxmihyundai.com/pay-with-fonepay-mobile/19');
+
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(_url,
+      mode: LaunchMode.inAppWebView,
+    )) {
+      throw Exception('Could not launch $_url');
+    }
   }
 }
