@@ -26,6 +26,10 @@ class BookingController extends GetxController with StateMixin<dynamic>{
   BookingRepository bookingRepository=BookingRepository();
   final formKey = GlobalKey<FormState>();
 
+  // For QR
+  String refId = '';
+  String hasError = '';
+
 
   TextEditingController nameController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
@@ -281,25 +285,29 @@ class BookingController extends GetxController with StateMixin<dynamic>{
           };
 
           print(map);
-          Loading().showLoading("Logging...");
+          // Loading().showLoading("Logging...");
           await bookingRepository.postBookingData(map).then((value) async{
             print(value);
             // print(value);
             var response=BookingResponse.fromJson(value);
-            if(response.status==true){
+            print('get response booking = $response');
+          if(response.status==true){
               print('status trueee= ${response.status}');
 
               Loading().hideLoading();
             }
             else{
-              print('status falsee= ${response.status}');
-
               Loading().hideLoading();
               HelperFunctions().snackBarCommon(context, response.message.toString(), 0);
+
+              print('status falsee= ${response.status}');
+
             }
           });
         }
         else{
+          Loading().hideLoading();
+
           HelperFunctions().snackBarCommon(context, AppStrings.noInternetConnection, 0);
           var lstEnqiuryDetail=await bookingService.getAllBookingDetails();
           if(!lstEnqiuryDetail.contains(offlineData)){
